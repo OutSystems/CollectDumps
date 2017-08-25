@@ -1,6 +1,6 @@
 # CollectDumps
 
-This script will collect proccess dumps and zip in a single file. A url for this file will be provided on the script's conclusion.
+This PowerShell script will collect process dumps and zip in a single file. A URL for this file will be provided on the script's conclusion.
 
 ## Using CollectDumps:
 
