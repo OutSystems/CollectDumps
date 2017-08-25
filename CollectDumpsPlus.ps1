@@ -1,3 +1,4 @@
+param(	[string]$personal = '')
 Add-Type -Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.IO.Compression.FileSystem.dll"
 
 function ZipFiles( $zipfilename, $sourcedir )
@@ -24,6 +25,23 @@ function Export-EventLog($logName,$destination)
    $eventLogSession.ExportLogAndMessages($logName,"LogName","*",$destination)
 }
 
+
+# Inform the user if app pools dumps will be included
+if ($personal) {Write-Host Dumps for personal $personal will be included} else {Write-Host No personal dumps will be included}
+
+# Retrieve personal application pools PIDs
+$appcmdPath = 'C:\windows\system32\inetsrv\appcmd.exe'
+$apppool_system = $personal + '_System'
+$apppool_apps = $personal + '_Apps'
+
+$system_pid = Invoke-Expression "$appcmdPath list wp /apppool.name:`"$apppool_system`""
+if ($system_pid -match "\d+") {$system_pid=$matches[0] }
+
+$apps_pid = Invoke-Expression "$appcmdPath list wp /apppool.name:`"$apppool_apps`""
+if ($apps_pid -match "\d+") {$apps_pid=$matches[0] }
+
+
+
 $basepath = split-path $SCRIPT:MyInvocation.MyCommand.Path -parent
 
 $url = "https://download.sysinternals.com/files/Procdump.zip"
@@ -39,6 +57,12 @@ Expand-ZIPFile -file $output -destination $basepath
 	.\procdump.exe -ma -accepteula SandboxManager.exe
 	.\procdump.exe -ma -accepteula LogServer.exe
 	.\procdump.exe -ma -accepteula Scheduler.exe
+	
+	if ($personal) {
+		.\procdump.exe -ma -accepteula $system_pid sysapppool_$_.dmp
+		.\procdump.exe -ma -accepteula $apps_pid appsapppool_$_.dmp	
+	}
+	
 	if ($_ -lt 3) { Start-Sleep -s 60 }
 }
 
