@@ -1,4 +1,4 @@
-param(	[string]$personal = '')
+param(	[string]$personal = '', [switch]$enterprise)
 Add-Type -Path "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.IO.Compression.FileSystem.dll"
 
 function ZipFiles( $zipfilename, $sourcedir )
@@ -27,12 +27,19 @@ function Export-EventLog($logName,$destination)
 
 
 # Inform the user if app pools dumps will be included
-if ($personal) {Write-Host Dumps for personal $personal will be included} else {Write-Host No personal dumps will be included}
+if ($personal) {Write-Host Dumps for personal $personal application pools will be included} elseif ($enterprise) {Write-Host Dumps for the application pools will be included} else {Write-Host No application pool will be included}
 
 # Retrieve personal application pools PIDs
 $appcmdPath = 'C:\windows\system32\inetsrv\appcmd.exe'
-$apppool_system = $personal + '_System'
-$apppool_apps = $personal + '_Apps'
+
+if ($personal){
+	$apppool_system = $personal + '_System'
+	$apppool_apps = $personal + '_Apps'
+} elseif ($enterprise) {
+	$apppool_system = 'ServiceCenterAppPool'
+	$apppool_apps = 'OutSystemsApplications'
+}
+
 
 $system_pid = Invoke-Expression "$appcmdPath list wp /apppool.name:`"$apppool_system`""
 if ($system_pid -match "\d+") {$system_pid=$matches[0] }
