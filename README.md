@@ -4,7 +4,7 @@ This PowerShell script will collect process dumps and zip in a single file. A UR
 
 ## Using CollectDumps:
 
-.\CollectDumpsPlus.ps1 [-personal <personal_environment_name>]
+.\CollectDumpsPlus.ps1 [-personal <personal_environment_name>] [-enterprise]
 
 ### Examples
 
@@ -15,9 +15,12 @@ This PowerShell script will collect process dumps and zip in a single file. A UR
 - Include application pools' dumps from a specific personal environment named OHKZ70022
 
   .\CollectDumpsPlus.ps1 -personal OHKZ70022
+  
+- Include application pools' dumps for an enterprise environment
 
+  .\CollectDumpsPlus.ps1 -enterprise
 
-## By default this script will include the following:
+## This script will include the following:
 
 - DeployService dumps;
 - CompilerService dumps;
@@ -31,3 +34,4 @@ This PowerShell script will collect process dumps and zip in a single file. A UR
 - mscordbi.dll;
 - SandboxManager.log;
 - Personal environment application pools dumps [optional]
+- Enterprise environment application pools dumps [optional]
